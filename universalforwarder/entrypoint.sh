@@ -2,6 +2,17 @@
 
 set -e
 
+# Create deploymentclient.conf with custom client-id
+if [[ -n ${SPLUNK_CLIENT_DOMAIN} ]]; then
+  mkdir -p  ${SPLUNK_HOME}/etc/system/local
+  echo "[deployment-client]" >> ${SPLUNK_HOME}/etc/system/local/deploymentclient.conf
+  echo "clientName = $(hostname).${SPLUNK_CLIENT_DOMAIN}" >> ${SPLUNK_HOME}/etc/system/local/deploymentclient.conf
+else
+  echo 'You should pass $SPLUNK_CLIENT_DOMAIN env variable to run this container'
+  exit 1
+fi
+
+
 if [ "$1" = 'splunk' ]; then
   shift
   sudo -HEu ${SPLUNK_USER} ${SPLUNK_HOME}/bin/splunk "$@"
