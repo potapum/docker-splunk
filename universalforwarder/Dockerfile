@@ -45,6 +45,9 @@ RUN apt-get update && apt-get install -y wget sudo \
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod +x /sbin/entrypoint.sh
 
+ENV TZ=Europe/Moscow
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # Ports Splunk Daemon, Network Input, HTTP Event Collector
 EXPOSE 8089/tcp 1514 8088/tcp
 
