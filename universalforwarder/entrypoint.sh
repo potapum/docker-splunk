@@ -84,6 +84,10 @@ EOF
     done
   fi
 
+#Clean locks 
+sudo -HEu ${SPLUNK_USER} sh -c "rm -rf ${SPLUNK_HOME}/var/run/splunk/*.pid"
+
+
   sudo -HEu ${SPLUNK_USER} ${SPLUNK_HOME}/bin/splunk start ${SPLUNK_START_ARGS}
   trap "sudo -HEu ${SPLUNK_USER} ${SPLUNK_HOME}/bin/splunk stop" SIGINT SIGTERM EXIT
 
@@ -116,6 +120,9 @@ EOF
       fi
     done
 
+#Clean locks 
+sudo -HEu ${SPLUNK_USER} sh -c "rm -rf ${SPLUNK_HOME}/var/run/splunk/*.pid"
+
     # Setup monitoring
     # http://docs.splunk.com/Documentation/Splunk/latest/Data/MonitorfilesanddirectoriesusingtheCLI
     # http://docs.splunk.com/Documentation/Splunk/latest/Data/Monitornetworkports
@@ -144,6 +151,9 @@ EOF
       fi
     done
   fi
+
+#Clean locks 
+sudo -HEu ${SPLUNK_USER} sh -c "rm -rf ${SPLUNK_HOME}/var/run/splunk/*.pid"
 
   sudo -HEu ${SPLUNK_USER} tail -n 0 -f ${SPLUNK_HOME}/var/log/splunk/splunkd_stderr.log &
   wait
