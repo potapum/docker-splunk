@@ -84,9 +84,12 @@ EOF
     done
   fi
 
-#Clean locks 
-sudo -HEu ${SPLUNK_USER} sh -c "rm -rf ${SPLUNK_HOME}/var/run/splunk/*.pid"
-
+# Prevent race condition while writing to config files
+while true; do
+     ${SPLUNK_HOME}/bin/splunk status| grep "not running" && break
+     echo "."
+     sleep 1
+    done
 
   sudo -HEu ${SPLUNK_USER} ${SPLUNK_HOME}/bin/splunk start ${SPLUNK_START_ARGS}
   trap "sudo -HEu ${SPLUNK_USER} ${SPLUNK_HOME}/bin/splunk stop" SIGINT SIGTERM EXIT
@@ -106,6 +109,14 @@ sudo -HEu ${SPLUNK_USER} sh -c "rm -rf ${SPLUNK_HOME}/var/run/splunk/*.pid"
       sudo -HEu ${SPLUNK_USER} sh -c "${SPLUNK_HOME}/bin/splunk restart"
     fi
 
+    # Prevent race condition while writing to config files
+while true; do
+     ${SPLUNK_HOME}/bin/splunk status| grep "not running" && break
+     echo "."
+     sleep 1
+    done
+
+
     # Setup forwarding server
     # http://docs.splunk.com/Documentation/Splunk/latest/Forwarding/Deployanixdfmanually
     if [[ -n ${SPLUNK_FORWARD_SERVER} ]]; then
@@ -119,9 +130,6 @@ sudo -HEu ${SPLUNK_USER} sh -c "rm -rf ${SPLUNK_HOME}/var/run/splunk/*.pid"
         break
       fi
     done
-
-#Clean locks 
-sudo -HEu ${SPLUNK_USER} sh -c "rm -rf ${SPLUNK_HOME}/var/run/splunk/*.pid"
 
     # Setup monitoring
     # http://docs.splunk.com/Documentation/Splunk/latest/Data/MonitorfilesanddirectoriesusingtheCLI
@@ -151,9 +159,6 @@ sudo -HEu ${SPLUNK_USER} sh -c "rm -rf ${SPLUNK_HOME}/var/run/splunk/*.pid"
       fi
     done
   fi
-
-#Clean locks 
-sudo -HEu ${SPLUNK_USER} sh -c "rm -rf ${SPLUNK_HOME}/var/run/splunk/*.pid"
 
   sudo -HEu ${SPLUNK_USER} tail -n 0 -f ${SPLUNK_HOME}/var/log/splunk/splunkd_stderr.log &
   wait
