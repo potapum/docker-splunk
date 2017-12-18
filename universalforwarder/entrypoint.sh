@@ -102,7 +102,7 @@ while true; do
     # http://docs.splunk.com/Documentation/Splunk/latest/Updating/Configuredeploymentclients
     if [[ -n ${SPLUNK_DEPLOYMENT_SERVER} ]]; then
       sudo -HEu ${SPLUNK_USER} sh -c "${SPLUNK_HOME}/bin/splunk set deploy-poll ${SPLUNK_DEPLOYMENT_SERVER} -auth admin:changeme"
-      __restart_required=true
+    #  __restart_required=true
     fi
 
     if [[ "$__restart_required" == "true" ]]; then
